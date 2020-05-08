@@ -15,4 +15,4 @@ phases:
       - npm run build
   post_build:
     commands:
-      - aws s3 sync ./build s3://Project1_UI
+      - aws s3 sync ./build s3://ui-manual-deploy-demo-jb
