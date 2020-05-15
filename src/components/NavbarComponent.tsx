@@ -27,21 +27,21 @@ const NavbarComponent = (props: INavbarProps) => {
     const classes = useStyles();
 
     let isAdmin = () => {
-        if (props.authUser.role == "Admin") {
+        if (props.authUser?.role == "Admin") {
             return true;
         }
         return false;
     }
 
     let isManager = () => {
-        if (props.authUser.role == "Manager") {
+        if (props.authUser?.role == "Manager") {
             return true;
         }
         return false;
     }
 
     let isUser = () => {
-        if (props.authUser.role == "User") {
+        if (props.authUser?.role == "User") {
             return true;
         }
         return false;
@@ -91,6 +91,29 @@ const NavbarComponent = (props: INavbarProps) => {
                                 :
                                 <></>
                             }
+                            {
+                                (isAdmin())
+                                ?
+                                <>
+                                    <ListItemText inset>
+                                        <Typography color="inherit" variant="h6">
+                                            <Link to="/admin/users" className={classes.link}>Manage Users</Link>
+                                        </Typography>
+                                    </ListItemText>
+                                    <ListItemText inset>
+                                        <Typography color="inherit" variant="h6">
+                                            <Link to="/register" className={classes.link}>Register New Users</Link>
+                                        </Typography>
+                                    </ListItemText>
+                                    <ListItemText inset>
+                                        <Typography color="inherit" variant="h6">
+                                            <Link to="/admin/updateUsers" className={classes.link}>Update User Information</Link>
+                                        </Typography>
+                                    </ListItemText>
+                                </>
+                                :
+                                <></>
+                            }
                             <></>
                         </>
                         :
@@ -98,11 +121,6 @@ const NavbarComponent = (props: INavbarProps) => {
                             <ListItemText inset>
                                 <Typography color="inherit" variant="h6">
                                     <Link to="/login" className={classes.link}>Login</Link>
-                                </Typography>
-                            </ListItemText>
-                            <ListItemText inset>
-                                <Typography color="inherit" variant="h6">
-                                    <Link to="/register" className={classes.link}>Register</Link>
                                 </Typography>
                             </ListItemText>
                         </>

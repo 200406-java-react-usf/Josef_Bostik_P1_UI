@@ -56,7 +56,7 @@ function UserReimbursementComponent(props: IReimbursementProps) {
     const [description, setDescription] = useState('');
     const [type, setType] = useState(1);
     const [userReimbursements, setUserReimbursements] = useState([{} as Reimbursement]);
-    const [errorMessage, setErrorMessage] = useState('Test message');
+    const [errorMessage, setErrorMessage] = useState('');
     const [errorSeverity, setErrorSeverity] = useState('error')
 
     let updateAmount = (e: any) => {

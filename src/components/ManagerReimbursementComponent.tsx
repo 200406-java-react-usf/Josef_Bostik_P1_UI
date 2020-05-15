@@ -51,7 +51,7 @@ const useStyles = makeStyles({
     }
 });
 
-function UserReimbursementComponent(props: IReimbursementProps) {
+function ManagerReimbursementComponent(props: IReimbursementProps) {
     const classes = useStyles();
 
     // const [amount, setAmount] = useState(0);
@@ -59,7 +59,7 @@ function UserReimbursementComponent(props: IReimbursementProps) {
     const [type, setType] = useState(0);
     const [status, setStatus] = useState(0)
     const [reimbursements, setReimbursements] = useState([{} as Reimbursement]);
-    const [errorMessage, setErrorMessage] = useState('Test message');
+    const [errorMessage, setErrorMessage] = useState('');
     const [errorSeverity, setErrorSeverity] = useState('error')
 
     // let updateAmount = (e: any) => {
@@ -169,7 +169,7 @@ function UserReimbursementComponent(props: IReimbursementProps) {
                         <option value="3">Approved</option>
                     </select>
                 <br/><br/>
-                <Button onClick={getAllReimbursements} variant="contained" color="primary" size="medium">Load User Reimbursements</Button>
+                <Button onClick={getAllReimbursements} variant="contained" color="primary" size="medium">Load Selected Reimbursements</Button>
                 <br/><br/>
             </div>
             <div className={classes.loginContainer}>
@@ -225,4 +225,4 @@ function UserReimbursementComponent(props: IReimbursementProps) {
     
 }
 
-export default UserReimbursementComponent;
+export default ManagerReimbursementComponent;
