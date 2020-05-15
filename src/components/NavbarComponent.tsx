@@ -26,6 +26,27 @@ const NavbarComponent = (props: INavbarProps) => {
 
     const classes = useStyles();
 
+    let isAdmin = () => {
+        if (props.authUser.role == "Admin") {
+            return true;
+        }
+        return false;
+    }
+
+    let isManager = () => {
+        if (props.authUser.role == "Manager") {
+            return true;
+        }
+        return false;
+    }
+
+    let isUser = () => {
+        if (props.authUser.role == "User") {
+            return true;
+        }
+        return false;
+    }
+
     return (
         <>
             <List component="nav">
@@ -45,6 +66,32 @@ const NavbarComponent = (props: INavbarProps) => {
                                 <Link to="/reimbursements" className={classes.link}>Reimbursements</Link>
                             </Typography>
                             </ListItemText>
+                            {
+                            // props.authUser.role == 1
+                            // ?
+                            // <>
+                            //     <ListItemText inset>
+                            //     <Typography color="inherit" variant="h6">
+                            //         <Link to="/users" className={classes.link}>Manage Users</Link>
+                            //     </Typography>
+                            //     </ListItemText>
+                            // </>
+                            }
+                            {console.log(props.authUser)}
+                            {   
+                                (isAdmin() || isManager())
+                                ?
+                                    <>
+                                        <ListItemText inset>
+                                        <Typography color="inherit" variant="h6">
+                                            <Link to="/manager/reimbursements" className={classes.link}>Manage Reimbursements</Link>
+                                        </Typography>
+                                        </ListItemText>
+                                    </>
+                                :
+                                <></>
+                            }
+                            <></>
                         </>
                         :
                         <>

@@ -9,6 +9,7 @@ import NavbarComponent from './components/NavbarComponent';
 import { AppBar, Toolbar, Typography } from '@material-ui/core';
 import RegisterComponent from './components/RegisterComponent';
 import UserReimbursementComponent from './components/UserReimbursementComponent';
+import ManagerReimbursementComponent from './components/ManagerReimbursementComponent';
 
 function App() {
 
@@ -32,6 +33,7 @@ function App() {
           <Route path="/login" render={() => <LoginComponent authUser={authUser} setAuthUser={setAuthUser} /> } />
           <Route path="/register" render={() => <RegisterComponent authUser={authUser} setAuthUser={setAuthUser}/> } />
           <Route path="/reimbursements" render={() => <UserReimbursementComponent authUser={authUser} setAuthUser={setAuthUser}/> } />
+          <Route path="/manager/reimbursements" render={() => <ManagerReimbursementComponent authUser={authUser} setAuthUser={setAuthUser}/> } />
         </Switch>
         
       </Router>
