@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Alert, AlertProps } from '@material-ui/lab';
+import { Alert } from '@material-ui/lab';
 import { 
     Typography, 
     FormControl, 
@@ -11,12 +11,11 @@ import {
 } from '@material-ui/core';
 
 import { authenticate } from '../remote/auth-service';
-import { createNewUser } from '../remote/create-new-user';
 import { User } from '../models/user';
 import { Redirect } from 'react-router-dom';
-import { register } from '../serviceWorker';
+import { updateUser } from '../remote/update-user';
 
-interface IRegisterProps {
+interface IUserProps {
     authUser: User;
     setAuthUser: (user: User) => void;
 }
@@ -34,18 +33,25 @@ const useStyles = makeStyles({
     }
 });
 
-function RegisterComponent(props: IRegisterProps) {
+function UpdateUserComponent(props: IUserProps) {
 
     const classes = useStyles();
 
+    const [id, setId] = useState(0);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmedPassword, setConfirmedPassword] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
-    const [errorMessage, setErrorMessage] = useState('Please Input A User');
+    const [role, setRole] = useState('');
+    const [errorMessage, setErrorMessage] = useState(`Welcome, please input the user you with to update. 
+                                                      If you do not wish to change a required field, 
+                                                      please input the existing value.`);
     const [errorSeverity, setErrorSeverity] = useState('info' as "info" | "error" | "success" | "warning" | undefined);
+
+    let updateId = (e: any) => {
+        setId(e.currentTarget.value);
+    }
 
     let updateUsername = (e: any) => {
         setUsername(e.currentTarget.value);
@@ -53,10 +59,6 @@ function RegisterComponent(props: IRegisterProps) {
 
     let updatePassword = (e: any) => {
         setPassword(e.currentTarget.value);
-    }
-
-    let updateConfirmedPassword = (e: any) => {
-        setConfirmedPassword(e.currentTarget.value);
     }
 
     let updateFirstName = (e: any) => {
@@ -71,41 +73,35 @@ function RegisterComponent(props: IRegisterProps) {
         setEmail(e.currentTarget.value);
     }
 
-    let isAdmin = () => {
-        if (props.authUser?.role == "Admin") {
-            return true;
-        }
-        return false;
+    let updateRole = (e: any) => {
+        setRole(e.currentTarget.value);
     }
 
-    let register = async () => {
-        let response = await createNewUser(username, password, firstName, lastName, email);
-        console.log(response)
-        console.log(response.status);
-        if (response.status == 201) {
-            setErrorMessage(`Successfully Added ${response.data.username}`)
-        } else if (response.status == 409) {
-            setErrorMessage("Username or password already taken.");
-            setErrorSeverity("error");
-            //username or password already taken. (should maybe specify?)
-        } else if (response.status == 400){
-            setErrorMessage("Invalid input. Ensure all fields are answered.");
-            setErrorSeverity("error");
-        } else {
-            setErrorMessage("Oops, something went wrong.");
-            setErrorSeverity("error");
-            //General failure
+    let update = async () => {
+        let response = await updateUser(id, username, password, firstName, lastName, email);
+        console.log(response);
+        if (response.status == 204) {
+            setErrorMessage(`Successfully updated user. `)
+            setErrorSeverity("success");
         }
-        //props.setAuthUser();
-        //console.log("status:" + response.status + " id:" + response.data.id);
+        //updateUser(id, username, password, firstName, lastName, email, role);
     }
 
     return (
-        isAdmin() ?
+        props.authUser ?
         <>
             <div className={classes.loginContainer}>
                 <form className={classes.loginForm}>
-                    <Typography align="center" variant="h4">Register A User</Typography>
+                    <Typography align="center" variant="h4">Update User Information:</Typography>
+
+                    <FormControl margin="normal" fullWidth>
+                        <InputLabel htmlFor="id">ID</InputLabel>
+                        <Input 
+                            onChange={updateId} 
+                            value={id} 
+                            id="id" type="text" 
+                            placeholder="Enter id" />
+                    </FormControl>
 
                     <FormControl margin="normal" fullWidth>
                         <InputLabel htmlFor="username">Username</InputLabel>
@@ -113,7 +109,7 @@ function RegisterComponent(props: IRegisterProps) {
                             onChange={updateUsername} 
                             value={username} 
                             id="username" type="text" 
-                            placeholder="Enter your username" />
+                            placeholder="Enter username" />
                     </FormControl>
 
                     <FormControl margin="normal" fullWidth>
@@ -122,46 +118,43 @@ function RegisterComponent(props: IRegisterProps) {
                             onChange={updatePassword}
                             value={password}
                             id="password" type="password"
-                            placeholder="Enter your password"/>
-                    </FormControl>
-
-                    <FormControl margin="normal" fullWidth>
-                        <InputLabel htmlFor="confirm password">Confirm Password</InputLabel>
-                        <Input 
-                            onChange={updateConfirmedPassword}
-                            value={confirmedPassword}
-                            id="confirmedPassword" type="password"
-                            placeholder="Re-Enter your password"/>
+                            placeholder="Enter password"/>
                     </FormControl>
 
                     <FormControl margin="normal" fullWidth>
                         <InputLabel htmlFor="firstName">First Name</InputLabel>
                         <Input 
-                            onChange={updateFirstName}
-                            value={firstName}
-                            id="firstName" type="text"
-                            placeholder="Enter your first name"/>
+                            onChange={updateFirstName} 
+                            value={firstName} 
+                            id="firstName" type="text" 
+                            placeholder="Enter firstName" />
                     </FormControl>
-
                     <FormControl margin="normal" fullWidth>
                         <InputLabel htmlFor="lastName">Last Name</InputLabel>
                         <Input 
-                            onChange={updateLastName}
-                            value={lastName}
-                            id="lastName" type="text"
-                            placeholder="Enter your last name"/>
+                            onChange={updateLastName} 
+                            value={lastName} 
+                            id="lastName" type="text" 
+                            placeholder="Enter Last Name" />
                     </FormControl>
-
                     <FormControl margin="normal" fullWidth>
-                        <InputLabel htmlFor="email">email</InputLabel>
+                        <InputLabel htmlFor="email">Email</InputLabel>
                         <Input 
-                            onChange={updateEmail}
-                            value={email}
-                            id="email" type="text"
-                            placeholder="Enter your email"/>
+                            onChange={updateEmail} 
+                            value={email} 
+                            id="email" type="text" 
+                            placeholder="Enter email" />
                     </FormControl>
+                    
+                    <select value = {role} onChange={updateRole}>
+                        <option value="3">User</option>
+                        <option value="1">Admin</option>
+                        <option value="2">Manager</option>
+                        <option value="4">Locked</option>
+                    </select>
+
                     <br/><br/>
-                    <Button onClick={register} variant="contained" color="primary" size="medium">Register</Button>
+                    <Button onClick={update} variant="contained" color="primary" size="medium">Submit</Button>
                     <br/><br/>
                     {
                         errorMessage 
@@ -179,4 +172,4 @@ function RegisterComponent(props: IRegisterProps) {
     
 }
 
-export default RegisterComponent;
+export default UpdateUserComponent;

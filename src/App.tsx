@@ -10,6 +10,9 @@ import { AppBar, Toolbar, Typography } from '@material-ui/core';
 import RegisterComponent from './components/RegisterComponent';
 import UserReimbursementComponent from './components/UserReimbursementComponent';
 import ManagerReimbursementComponent from './components/ManagerReimbursementComponent';
+import AdminUserComponent from './components/AdminUserComponent';
+import UpdateUserComponent from './components/UpdateUserComponent';
+import UpdateReimbursementComponent from './components/UpdateReimbursementComponent';
 
 function App() {
 
@@ -34,6 +37,9 @@ function App() {
           <Route path="/register" render={() => <RegisterComponent authUser={authUser} setAuthUser={setAuthUser}/> } />
           <Route path="/reimbursements" render={() => <UserReimbursementComponent authUser={authUser} setAuthUser={setAuthUser}/> } />
           <Route path="/manager/reimbursements" render={() => <ManagerReimbursementComponent authUser={authUser} setAuthUser={setAuthUser}/> } />
+          <Route path="/manager/updateReimbursements" render={() => <UpdateReimbursementComponent authUser={authUser} setAuthUser={setAuthUser}/> } />
+          <Route path="/admin/users" render={() => <AdminUserComponent authUser={authUser} setAuthUser={setAuthUser}/> } />
+          <Route path="/admin/updateUsers" render={() => <UpdateUserComponent authUser={authUser} setAuthUser={setAuthUser}/> } />
         </Switch>
         
       </Router>
