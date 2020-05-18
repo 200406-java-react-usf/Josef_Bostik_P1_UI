@@ -23,6 +23,7 @@ import { authenticate } from '../remote/auth-service';
 import { createNewReimbursement } from '../remote/create-new-reimbursement';
 import { getUserReimbursements } from '../remote/get-user-reimbursements';
 import { deleteReimbursement } from '../remote/delete-reimbursement';
+import { updateReimbursement } from '../remote/update-reimbursement';
 import { User } from '../models/user';
 import { Reimbursement } from '../models/reimbursements'
 import { Redirect } from 'react-router-dom';
@@ -55,9 +56,15 @@ function UserReimbursementComponent(props: IReimbursementProps) {
     const [amount, setAmount] = useState(0);
     const [description, setDescription] = useState('');
     const [type, setType] = useState(1);
+    const [uid, setUId] = useState(0);
+    const [uAmount, setUAmount] = useState(0);
+    const [uDescription, setUDescription] = useState('');
+    const [uType, setUType] = useState(1);
     const [userReimbursements, setUserReimbursements] = useState([{} as Reimbursement]);
     const [errorMessage, setErrorMessage] = useState('');
-    const [errorSeverity, setErrorSeverity] = useState('error')
+    const [errorSeverity, setErrorSeverity] = useState('error' as "info" | "error" | "success" | "warning" | undefined)
+    const [uErrorMessage, setUErrorMessage] = useState('');
+    const [uErrorSeverity, setUErrorSeverity] = useState('error' as "info" | "error" | "success" | "warning" | undefined)
 
     let updateAmount = (e: any) => {
         setAmount(e.currentTarget.value);
@@ -69,6 +76,18 @@ function UserReimbursementComponent(props: IReimbursementProps) {
 
     let updateType = (e: any) => {
         setType(e.currentTarget.value);
+    }
+    let updateUId = (e: any) => {
+        setUId(e.currentTarget.value);
+    }
+    let updateUAmount = (e: any) => {
+        setUAmount(e.currentTarget.value);
+    }
+    let updateUDescription = (e: any) => {
+        setUDescription(e.currentTarget.value);
+    }
+    let updateUType = (e: any) => {
+        setUType(e.currentTarget.value);
     }
 
     let typeDecoder = (typeId: number) => {
@@ -108,7 +127,7 @@ function UserReimbursementComponent(props: IReimbursementProps) {
 
     let getAllUserReimbursements = async () => {
         let response = await getUserReimbursements(props.authUser.id);
-        console.log(response.status)
+        console.log("Retrieved All User Reimbursements, Status: " + response.status)
         if (response.status=200) {
             setUserReimbursements(response.data)
         }
@@ -116,6 +135,16 @@ function UserReimbursementComponent(props: IReimbursementProps) {
 
     let registerReimbursement = async () => {
 
+        if (!amount) {
+            setErrorMessage("Please Provide an Amount");
+            setErrorSeverity('error');
+            return;
+        }
+        if (!description) {
+            setErrorMessage("Please Provide a Description");
+            setErrorSeverity('error');
+            return;
+        }
         let response = await createNewReimbursement(amount, description, props.authUser.id, +type);
         if (response == 201) {
             setErrorMessage("Success");
@@ -124,22 +153,40 @@ function UserReimbursementComponent(props: IReimbursementProps) {
             setErrorMessage("General Failure")
             setErrorSeverity('error');
         }
-            // console.log(response)
-        // console.log(response.status);
-        // if (response == 201) {
-        //     let authUser = await authenticate(username, password);
-        //     props.setAuthUser(authUser);
-        // } else if (response == 409) {
-        //     setErrorMessage("Username or password already taken.");
-        //     //username or password already taken. (should maybe specify?)
-        // } else if (response == 400){
-        //     setErrorMessage("Invalid input. Ensure all fields are answered.");
-        // } else {
-        //     setErrorMessage("Oops, something went wrong.");
-        //     //General failure
-        // }
-        //props.setAuthUser();
-        //console.log("status:" + response.status + " id:" + response.data.id);
+    }
+
+    let updateUserReimbursement = async () => {
+        if (!uid) {
+            setUErrorMessage("Please Provide an ID");
+            setUErrorSeverity('error');
+            return;
+        }
+        if (!uAmount) {
+            setUErrorMessage("Please Provide an Amount");
+            setUErrorSeverity('error');
+            return;
+        }
+        if (!uDescription) {
+            setUErrorMessage("Please Provide a Description");
+            setUErrorSeverity('error');
+            return;
+        }
+
+        let response = await updateReimbursement(uid, uAmount, uDescription, props.authUser.id, uType);
+        if (response.status == 204) {
+            setUErrorMessage("Success");
+            setUErrorSeverity('success');
+        } else if (response == 409) {
+            setUErrorMessage("Can Only Update Pending Reimbursements");
+            setUErrorSeverity('error');
+        } else if (response == 404 || response == 401) {
+            setUErrorMessage("Can not find a Reimbursement with that ID");
+            setUErrorSeverity('error');
+        } else {
+            setUErrorMessage("General Failure")
+            setUErrorSeverity('error');
+        }
+        getAllUserReimbursements();
     }
 
     //Function to get all user's reimbursements
@@ -188,13 +235,71 @@ function UserReimbursementComponent(props: IReimbursementProps) {
                     {
                         errorMessage 
                             ? 
-                        //@ts-ignore
                         <Alert severity={errorSeverity}>{errorMessage}</Alert>
                             :
                         <></>
                     }
                 </form>
             </div>
+
+            <div className={classes.loginContainer}>
+                <form className={classes.loginForm}>
+                    <Typography align="center" variant="h4">Update Pending Reimbursements</Typography>
+
+                    <FormControl margin="normal" fullWidth>
+                        <InputLabel htmlFor="uid">ID</InputLabel>
+                        <Input 
+                            onChange={updateUId} 
+                            value={uid} 
+                            id="uid" type="number" 
+                            placeholder="Enter Updated Id" />
+                    </FormControl>
+
+                    <FormControl margin="normal" fullWidth>
+                        <InputLabel htmlFor="uAmount">Update Amount</InputLabel>
+                        <Input 
+                            onChange={updateUAmount} 
+                            value={uAmount} 
+                            id="uAmount" type="number" 
+                            placeholder="Enter Updated Reimbursement Amount" />
+                    </FormControl>
+
+                    <FormControl margin="normal" fullWidth>
+                        <InputLabel htmlFor="uDescription">Update Description</InputLabel>
+                        <Input 
+                            onChange={updateUDescription}
+                            value={uDescription}
+                            id="uDescription" type="text"
+                            placeholder="Enter Updated Reimbursement Description"/>
+                    </FormControl>
+
+                    <select value = {uType} onChange={updateUType}>
+                        <option value="1">Lodging</option>
+                        <option value="2">Travel</option>
+                        <option value="3">Food</option>
+                        <option value="4">Other</option>
+                    </select>
+
+                    {/* <select class="form-control" id="operation">
+                    <option>Add</option>
+                    <option>Subtract</option>
+                    <option>Divide</option>
+                    <option>Multiply</option>
+                    </select> */}
+
+                    <br/><br/>
+                    <Button onClick={updateUserReimbursement} variant="contained" color="primary" size="medium">Update</Button>
+                    <br/><br/>
+                    {
+                        uErrorMessage 
+                            ? 
+                        <Alert severity={uErrorSeverity}>{uErrorMessage}</Alert>
+                            :
+                        <></>
+                    }
+                </form>
+            </div>
+
             <div className={classes.loginContainer}>
                 <br/><br/>
                 <Button onClick={getAllUserReimbursements} variant="contained" color="primary" size="medium">Load User Reimbursements</Button>
