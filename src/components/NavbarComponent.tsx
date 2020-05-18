@@ -66,6 +66,7 @@ const NavbarComponent = (props: INavbarProps) => {
                                 <Link to="/reimbursements" className={classes.link}>Reimbursements</Link>
                             </Typography>
                             </ListItemText>
+
                             {
                             // props.authUser.role == 1
                             // ?

@@ -44,7 +44,7 @@ function UpdateUserComponent(props: IUserProps) {
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [role, setRole] = useState('');
-    const [errorMessage, setErrorMessage] = useState(`Welcome, please input the user you with to update. 
+    const [errorMessage, setErrorMessage] = useState(`Welcome, please input the user you wish to update. 
                                                       If you do not wish to change a required field, 
                                                       please input the existing value.`);
     const [errorSeverity, setErrorSeverity] = useState('info' as "info" | "error" | "success" | "warning" | undefined);
