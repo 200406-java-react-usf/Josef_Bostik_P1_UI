@@ -128,7 +128,7 @@ function UserReimbursementComponent(props: IReimbursementProps) {
     let getAllUserReimbursements = async () => {
         let response = await getUserReimbursements(props.authUser.id);
         console.log("Retrieved All User Reimbursements, Status: " + response.status)
-        if (response.status=200) {
+        if (response.status==200) {
             setUserReimbursements(response.data)
         }
     }
