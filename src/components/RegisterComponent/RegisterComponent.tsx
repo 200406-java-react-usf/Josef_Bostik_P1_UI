@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-
-import { Alert, AlertProps } from '@material-ui/lab';
 import { 
     Typography, 
     FormControl, 
@@ -9,32 +7,32 @@ import {
     Button, 
     makeStyles 
 } from '@material-ui/core';
-
-import { authenticate } from '../remote/auth-service';
-import { createNewUser } from '../remote/create-new-user';
-import { User } from '../models/user';
+import { Alert, AlertProps } from '@material-ui/lab';
 import { Redirect } from 'react-router-dom';
-import { register } from '../serviceWorker';
+import { register } from '../../serviceWorker';
+import { authenticate } from '../../remote/auth-service';
+import { createNewUser } from '../../remote/create-new-user';
+import { User } from '../../models/user';
 
-interface IRegisterProps {
-    authUser: User;
+export interface IRegisterProps {
+    authUser: User | undefined;
     setAuthUser: (user: User) => void;
 }
 
 const useStyles = makeStyles({
-    loginContainer: {
+    registerContainer: {
         display: "flex",
         justifyContent: "center",
         margin: 20,
         marginTop: 40,
         padding: 20
     },
-    loginForm: {
+    registerForm: {
         width: "50%"
     }
 });
 
-function RegisterComponent(props: IRegisterProps) {
+const RegisterComponent = (props: IRegisterProps) => {
 
     const classes = useStyles();
 
@@ -48,27 +46,27 @@ function RegisterComponent(props: IRegisterProps) {
     const [errorSeverity, setErrorSeverity] = useState('info' as "info" | "error" | "success" | "warning" | undefined);
 
     let updateUsername = (e: any) => {
-        setUsername(e.currentTarget.value);
+        setUsername(e.target.value);
     }
 
     let updatePassword = (e: any) => {
-        setPassword(e.currentTarget.value);
+        setPassword(e.target.value);
     }
 
     let updateConfirmedPassword = (e: any) => {
-        setConfirmedPassword(e.currentTarget.value);
+        setConfirmedPassword(e.target.value);
     }
 
     let updateFirstName = (e: any) => {
-        setFirstName(e.currentTarget.value);
+        setFirstName(e.target.value);
     }
 
     let updateLastName = (e: any) => {
-        setLastName(e.currentTarget.value);
+        setLastName(e.target.value);
     }
 
     let updateEmail = (e: any) => {
-        setEmail(e.currentTarget.value);
+        setEmail(e.target.value);
     }
 
     let isAdmin = () => {
@@ -84,6 +82,7 @@ function RegisterComponent(props: IRegisterProps) {
         console.log(response.status);
         if (response.status == 201) {
             setErrorMessage(`Successfully Added ${response.data.username}`)
+            setErrorSeverity("success");
         } else if (response.status == 409) {
             setErrorMessage("Username or password already taken.");
             setErrorSeverity("error");
@@ -103,8 +102,8 @@ function RegisterComponent(props: IRegisterProps) {
     return (
         isAdmin() ?
         <>
-            <div className={classes.loginContainer}>
-                <form className={classes.loginForm}>
+            <div className={classes.registerContainer}>
+                <form className={classes.registerForm}>
                     <Typography align="center" variant="h4">Register A User</Typography>
 
                     <FormControl margin="normal" fullWidth>
@@ -153,7 +152,7 @@ function RegisterComponent(props: IRegisterProps) {
                     </FormControl>
 
                     <FormControl margin="normal" fullWidth>
-                        <InputLabel htmlFor="email">email</InputLabel>
+                        <InputLabel htmlFor="email">Email</InputLabel>
                         <Input 
                             onChange={updateEmail}
                             value={email}
@@ -161,7 +160,7 @@ function RegisterComponent(props: IRegisterProps) {
                             placeholder="Enter your email"/>
                     </FormControl>
                     <br/><br/>
-                    <Button onClick={register} variant="contained" color="primary" size="medium">Register</Button>
+                    <Button id="submitButton" style={{backgroundColor: '#282c34'}} onClick={register} variant="contained" color="primary" size="medium">Register</Button>
                     <br/><br/>
                     {
                         errorMessage 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Alert } from '@material-ui/lab';
 import { 
@@ -19,30 +19,30 @@ import {
 
 } from '@material-ui/core';
 
-import { authenticate } from '../remote/auth-service';
-import { createNewReimbursement } from '../remote/create-new-reimbursement';
-import { getUserReimbursements } from '../remote/get-user-reimbursements';
-import { deleteReimbursement } from '../remote/delete-reimbursement';
-import { updateReimbursement } from '../remote/update-reimbursement';
-import { User } from '../models/user';
-import { Reimbursement } from '../models/reimbursements'
+import { authenticate } from '../../remote/auth-service';
+import { createNewReimbursement } from '../../remote/create-new-reimbursement';
+import { getUserReimbursements } from '../../remote/get-user-reimbursements';
+import { deleteReimbursement } from '../../remote/delete-reimbursement';
+import { updateReimbursement } from '../../remote/update-reimbursement';
+import { User } from '../../models/user';
+import { Reimbursement } from '../../models/reimbursements'
 import { Redirect } from 'react-router-dom';
-import { register } from '../serviceWorker';
+import { register } from '../../serviceWorker';
 
-interface IReimbursementProps {
+export interface IReimbursementProps {
     authUser: User;
     setAuthUser: (user: User) => void;
 }
 
 const useStyles = makeStyles({
-    loginContainer: {
+    reimbursementContainer: {
         display: "flex",
         justifyContent: "center",
         margin: 20,
         marginTop: 40,
         padding: 20
     },
-    loginForm: {
+    reimbursementForm: {
         width: "50%"
     },
     table: {
@@ -63,31 +63,35 @@ function UserReimbursementComponent(props: IReimbursementProps) {
     const [userReimbursements, setUserReimbursements] = useState([{} as Reimbursement]);
     const [errorMessage, setErrorMessage] = useState('');
     const [errorSeverity, setErrorSeverity] = useState('error' as "info" | "error" | "success" | "warning" | undefined)
-    const [uErrorMessage, setUErrorMessage] = useState('');
-    const [uErrorSeverity, setUErrorSeverity] = useState('error' as "info" | "error" | "success" | "warning" | undefined)
+    const [uErrorMessage, setUErrorMessage] = useState('Reminder: Only pending Reimbursements can be updated.');
+    const [uErrorSeverity, setUErrorSeverity] = useState('info' as "info" | "error" | "success" | "warning" | undefined)
+
+    useEffect(() => {
+        getAllUserReimbursements();
+    }, []);
 
     let updateAmount = (e: any) => {
-        setAmount(e.currentTarget.value);
+        setAmount(e.target.value);
     }
 
     let updateDescription = (e: any) => {
-        setDescription(e.currentTarget.value);
+        setDescription(e.target.value);
     }
 
     let updateType = (e: any) => {
-        setType(e.currentTarget.value);
+        setType(e.target.value);
     }
     let updateUId = (e: any) => {
-        setUId(e.currentTarget.value);
+        setUId(e.target.value);
     }
     let updateUAmount = (e: any) => {
-        setUAmount(e.currentTarget.value);
+        setUAmount(e.target.value);
     }
     let updateUDescription = (e: any) => {
-        setUDescription(e.currentTarget.value);
+        setUDescription(e.target.value);
     }
     let updateUType = (e: any) => {
-        setUType(e.currentTarget.value);
+        setUType(e.target.value);
     }
 
     let typeDecoder = (typeId: number) => {
@@ -126,10 +130,14 @@ function UserReimbursementComponent(props: IReimbursementProps) {
     }
 
     let getAllUserReimbursements = async () => {
-        let response = await getUserReimbursements(props.authUser.id);
+        let response = await getUserReimbursements(props.authUser?.id);
         console.log("Retrieved All User Reimbursements, Status: " + response.status)
         if (response.status==200) {
-            setUserReimbursements(response.data)
+            let data = response.data;
+            data.sort(function(a: Reimbursement, b: Reimbursement) { 
+                return a.id - b.id;
+            });
+            setUserReimbursements(data);
         }
     }
 
@@ -153,6 +161,7 @@ function UserReimbursementComponent(props: IReimbursementProps) {
             setErrorMessage("General Failure")
             setErrorSeverity('error');
         }
+        getAllUserReimbursements();
     }
 
     let updateUserReimbursement = async () => {
@@ -193,8 +202,8 @@ function UserReimbursementComponent(props: IReimbursementProps) {
     return (
         props.authUser ?
         <>
-            <div className={classes.loginContainer}>
-                <form className={classes.loginForm}>
+            <div className={classes.reimbursementContainer}>
+                <form className={classes.reimbursementForm}>
                     <Typography align="center" variant="h4">Register a New Reimbursement</Typography>
 
                     <FormControl margin="normal" fullWidth>
@@ -230,7 +239,7 @@ function UserReimbursementComponent(props: IReimbursementProps) {
                     </select> */}
 
                     <br/><br/>
-                    <Button onClick={registerReimbursement} variant="contained" color="primary" size="medium">Register</Button>
+                    <Button style={{backgroundColor: '#282c34'}} id="registerButton" onClick={registerReimbursement} variant="contained" color="primary" size="medium">Register</Button>
                     <br/><br/>
                     {
                         errorMessage 
@@ -242,8 +251,8 @@ function UserReimbursementComponent(props: IReimbursementProps) {
                 </form>
             </div>
 
-            <div className={classes.loginContainer}>
-                <form className={classes.loginForm}>
+            <div className={classes.reimbursementContainer}>
+                <form className={classes.reimbursementForm}>
                     <Typography align="center" variant="h4">Update Pending Reimbursements</Typography>
 
                     <FormControl margin="normal" fullWidth>
@@ -288,7 +297,7 @@ function UserReimbursementComponent(props: IReimbursementProps) {
                     </select> */}
 
                     <br/><br/>
-                    <Button onClick={updateUserReimbursement} variant="contained" color="primary" size="medium">Update</Button>
+                    <Button style={{backgroundColor: '#282c34'}} onClick={updateUserReimbursement} variant="contained" color="primary" size="medium">Update</Button>
                     <br/><br/>
                     {
                         uErrorMessage 
@@ -300,12 +309,12 @@ function UserReimbursementComponent(props: IReimbursementProps) {
                 </form>
             </div>
 
-            <div className={classes.loginContainer}>
+            {/* <div className={classes.loginContainer}>
                 <br/><br/>
                 <Button onClick={getAllUserReimbursements} variant="contained" color="primary" size="medium">Load User Reimbursements</Button>
                 <br/><br/>
-            </div>
-            <div className={classes.loginContainer}>
+            </div> */}
+            <div className={classes.reimbursementContainer}>
                 <TableContainer component={Paper}>
                     <Table className={classes.table} aria-label="simple table">
                         <TableHead>

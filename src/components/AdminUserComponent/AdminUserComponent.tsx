@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Alert } from '@material-ui/lab';
 import { 
@@ -19,32 +19,32 @@ import {
 
 } from '@material-ui/core';
 
-import { authenticate } from '../remote/auth-service';
-import { createNewReimbursement } from '../remote/create-new-reimbursement';
-import { getUserReimbursements } from '../remote/get-user-reimbursements';
-import { delUser } from '../remote/delete-user';
-import { getReimbursements } from '../remote/get-all-reimbursements'
-import { updateReimbursementStatus } from '../remote/update-reimbursement-status';
-import { User } from '../models/user';
-import { Reimbursement } from '../models/reimbursements'
+import { authenticate } from '../../remote/auth-service';
+import { createNewReimbursement } from '../../remote/create-new-reimbursement';
+import { getUserReimbursements } from '../../remote/get-user-reimbursements';
+import { delUser } from '../../remote/delete-user';
+import { getReimbursements } from '../../remote/get-all-reimbursements'
+import { updateReimbursementStatus } from '../../remote/update-reimbursement-status';
+import { User } from '../../models/user';
+import { Reimbursement } from '../../models/reimbursements'
 import { Redirect } from 'react-router-dom';
-import { register } from '../serviceWorker';
-import { getUsers } from '../remote/get-all-users';
+import { register } from '../../serviceWorker';
+import { getUsers } from '../../remote/get-all-users';
 
-interface IUserProps {
+export interface IUserProps {
     authUser: User;
     setAuthUser: (user: User) => void;
 }
 
 const useStyles = makeStyles({
-    loginContainer: {
+    userContainer: {
         display: "flex",
         justifyContent: "center",
         margin: 20,
         marginTop: 40,
         padding: 20
     },
-    loginForm: {
+    userForm: {
         width: "50%"
     },
     table: {
@@ -72,11 +72,18 @@ function AdminUserComponent(props: IUserProps) {
         
     // }
 
+    useEffect(() => {
+        getAllUsers();
+    }, []);
+
     let getAllUsers = async () => {
         let response = await getUsers();
         console.log(response.status)
         if (response.status==200) {
             let data = response.data;
+            data.sort(function(a: Reimbursement, b: Reimbursement) { 
+                return a.id - b.id;
+            });
             setUsers(data)
         }
     }
@@ -103,12 +110,12 @@ function AdminUserComponent(props: IUserProps) {
         isAdmin() ?
         <>
 
-            <div className={classes.loginContainer}>
+            {/* <div className={classes.loginContainer}>
                 <br/><br/>
                 <Button onClick={getAllUsers} variant="contained" color="primary" size="medium">Load All Users</Button>
                 <br/><br/>
-            </div>
-            <div className={classes.loginContainer}>
+            </div> */}
+            <div className={classes.userContainer}>
                 <TableContainer component={Paper}>
                     <Table className={classes.table} aria-label="simple table">
                         <TableHead>
@@ -132,7 +139,7 @@ function AdminUserComponent(props: IUserProps) {
                             <TableCell align="right">{row.lastName}</TableCell>
                             <TableCell align="right">{row.email}</TableCell>
                             <TableCell align="right">{row.role}</TableCell>
-                            <TableCell align="right"><Button onClick={() => deleteUser(row.id)} variant="contained" color="primary" size="medium">DELETE</Button></TableCell>
+                            <TableCell align="right"><Button id="deleteButton" style={{backgroundColor: 'red'}} onClick={() => deleteUser(row.id)} variant="contained" color="primary" size="medium">DELETE</Button></TableCell>
 
                             </TableRow>
                         ))}
