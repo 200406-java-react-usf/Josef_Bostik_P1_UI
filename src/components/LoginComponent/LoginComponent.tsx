@@ -10,12 +10,12 @@ import {
     makeStyles 
 } from '@material-ui/core';
 
-import { authenticate } from '../remote/auth-service';
-import { User } from '../models/user';
+import { authenticate } from '../../remote/auth-service';
+import { User } from '../../models/user';
 import { Redirect } from 'react-router-dom';
 
-interface ILoginProps {
-    authUser: User;
+export interface ILoginProps {
+    authUser: User | undefined;
     setAuthUser: (user: User) => void;
 }
 
@@ -42,11 +42,11 @@ function LoginComponent(props: ILoginProps) {
     const [errorSeverity, setErrorSeverity] = useState('info' as "info" | "error" | "success" | "warning" | undefined);
 
     let updateUsername = (e: any) => {
-        setUsername(e.currentTarget.value);
+        setUsername(e.target.value);
     }
 
     let updatePassword = (e: any) => {
-        setPassword(e.currentTarget.value);
+        setPassword(e.target.value);
     }
 
     let login = async () => {
@@ -93,7 +93,7 @@ function LoginComponent(props: ILoginProps) {
                             placeholder="Enter your password"/>
                     </FormControl>
                     <br/><br/>
-                    <Button onClick={login} variant="contained" color="primary" size="medium">Login</Button>
+                    <Button id="submitButton" style={{backgroundColor: '#282c34'}} onClick={login} variant="contained" color="primary" size="medium">Login</Button>
                     <br/><br/>
                     {
                         errorMessage 

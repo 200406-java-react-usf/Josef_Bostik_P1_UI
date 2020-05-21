@@ -6,13 +6,14 @@ import {
     List, 
     ListItem, 
     Typography, 
-    ListItemText 
+    ListItemText, 
+    Button
 } from '@material-ui/core';
 
-import { User } from '../models/user';
+import { User } from '../../models/user';
 
-interface INavbarProps {
-    authUser: User;
+export interface INavbarProps {
+    authUser: User | undefined;
 }
 
 const useStyles = makeStyles({
@@ -45,6 +46,9 @@ const NavbarComponent = (props: INavbarProps) => {
             return true;
         }
         return false;
+    }
+    let logout = () => {
+        window.location.reload(false);
     }
 
     return (
@@ -116,6 +120,16 @@ const NavbarComponent = (props: INavbarProps) => {
                                 <></>
                             }
                             <></>
+                            <ListItemText inset>
+                                <Typography color="inherit" variant="h6">
+                                    <span className={classes.link}>{props.authUser?.username}</span>
+                                </Typography>
+                            </ListItemText>
+                            <ListItemText style={{float:"right"}} inset>
+                                <Typography color="inherit" variant="h6">
+                                    <Button id="logoutButton" style={{backgroundColor: '#282c34'}} onClick={logout} variant="contained" color="primary" size="medium">Logout</Button>
+                                </Typography>
+                            </ListItemText>
                         </>
                         :
                         <>
@@ -126,13 +140,7 @@ const NavbarComponent = (props: INavbarProps) => {
                             </ListItemText>
                         </>
                     }
-                    
-                    <ListItemText inset>
-                        <Typography color="inherit" variant="h6">
-                            <span className={classes.link}>{props.authUser?.username}</span>
-                        </Typography>
-                    </ListItemText>
-                    
+
                 </ListItem>
             </List>
         </>

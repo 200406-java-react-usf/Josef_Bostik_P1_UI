@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
-import LoginComponent from './components/LoginComponent';
-import HomeComponent from './components/HomeComponent';
+import LoginComponent from './components/LoginComponent/LoginComponent';
+import HomeComponent from './components/HomeComponent/HomeComponent';
 
 import { User } from './models/user';
-import NavbarComponent from './components/NavbarComponent';
+import NavbarComponent from './components/NavbarComponent/NavbarComponent';
 import { AppBar, Toolbar, Typography } from '@material-ui/core';
-import RegisterComponent from './components/RegisterComponent';
-import UserReimbursementComponent from './components/UserReimbursementComponent';
-import ManagerReimbursementComponent from './components/ManagerReimbursementComponent';
-import AdminUserComponent from './components/AdminUserComponent';
-import UpdateUserComponent from './components/UpdateUserComponent';
+import RegisterComponent from './components/RegisterComponent/RegisterComponent';
+import UserReimbursementComponent from './components/UserReimbursementComponent/UserReimbursementComponent';
+import ManagerReimbursementComponent from './components/ManagerReimbursementComponent/ManagerReimbursementComponent';
+import AdminUserComponent from './components/AdminUserComponent/AdminUserComponent';
+import UpdateUserComponent from './components/UpdateUserComponent/UpdateUserComponent';
 // import UpdateReimbursementComponent from './components/UpdateReimbursementComponent';
 
 function App() {
@@ -23,7 +23,12 @@ function App() {
     <>
       <Router>
 
-        <AppBar color="primary" position="static">
+        <AppBar style=  {{
+                            backgroundColor: '#282c34',
+                            width: '100%',
+                            height: '8%'
+                        }} 
+                color="primary" position="static">
           <Toolbar>
               <Typography variant="h5" color="inherit">
                 <NavbarComponent authUser={authUser}/>

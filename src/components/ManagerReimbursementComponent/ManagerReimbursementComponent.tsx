@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Component, useEffect } from 'react';
 
 import { Alert } from '@material-ui/lab';
 import { 
@@ -15,41 +15,46 @@ import {
     TableHead,
     TableRow,
     Paper,
-    responsiveFontSizes
+    responsiveFontSizes,
+    Select,
+    MenuItem
 
 } from '@material-ui/core';
 
-import { authenticate } from '../remote/auth-service';
-import { createNewReimbursement } from '../remote/create-new-reimbursement';
-import { getUserReimbursements } from '../remote/get-user-reimbursements';
-import { deleteReimbursement } from '../remote/delete-reimbursement';
-import { getReimbursements } from '../remote/get-all-reimbursements'
-import { updateReimbursementStatus } from '../remote/update-reimbursement-status';
-import { User } from '../models/user';
-import { Reimbursement } from '../models/reimbursements'
+import { authenticate } from '../../remote/auth-service';
+import { createNewReimbursement } from '../../remote/create-new-reimbursement';
+import { getUserReimbursements } from '../../remote/get-user-reimbursements';
+import { deleteReimbursement } from '../../remote/delete-reimbursement';
+import { getReimbursements } from '../../remote/get-all-reimbursements'
+import { updateReimbursementStatus } from '../../remote/update-reimbursement-status';
+import { User } from '../../models/user';
+import { Reimbursement } from '../../models/reimbursements'
 import { Redirect } from 'react-router-dom';
-import { register } from '../serviceWorker';
+import { register } from '../../serviceWorker';
+import { render } from '@testing-library/react';
 
-interface IReimbursementProps {
+export interface IReimbursementProps {
     authUser: User;
     setAuthUser: (user: User) => void;
 }
 
 const useStyles = makeStyles({
-    loginContainer: {
+    reimbursementContainer: {
         display: "flex",
         justifyContent: "center",
         margin: 20,
         marginTop: 40,
         padding: 20
     },
-    loginForm: {
+    reimbursementForm: {
         width: "50%"
     },
     table: {
         minWidth: 650,
     }
 });
+
+
 
 function ManagerReimbursementComponent(props: IReimbursementProps) {
     const classes = useStyles();
@@ -61,6 +66,7 @@ function ManagerReimbursementComponent(props: IReimbursementProps) {
     const [reimbursements, setReimbursements] = useState([{} as Reimbursement]);
     const [errorMessage, setErrorMessage] = useState('');
     const [errorSeverity, setErrorSeverity] = useState('error')
+    const [forceStateChange, setForceStateChange] = useState(true);
 
     // let updateAmount = (e: any) => {
     //     setAmount(e.currentTarget.value);
@@ -70,16 +76,23 @@ function ManagerReimbursementComponent(props: IReimbursementProps) {
     //     setDescription(e.currentTarget.value);
     // }
 
+    useEffect(() => {
+        getAllReimbursements();
+    }, []);
+
     let updateType = (e: any) => {
-        if (e.currentTarget.value >= 0 && e.currentTarget.value < 5) {
-            setType(e.currentTarget.value);
+        console.log(e.target.value);
+        if (e.target.value >= 0 && e.target.value < 5) {
+            setType(e.target.value);
+            
         }
     }
 
     let updateStatus = (e: any) => {
-        if (e.currentTarget.value >= 0 && e.currentTarget.value < 4) {
-            setStatus(e.currentTarget.value);
+        if (e.target.value >= 0 && e.target.value < 4) {
+            setStatus(e.target.value);
         }
+        
     }
 
     let typeDecoder = (typeId: number) => {
@@ -118,7 +131,7 @@ function ManagerReimbursementComponent(props: IReimbursementProps) {
     // }
 
     let getAllReimbursements = async () => {
-        let response = await getReimbursements(props.authUser.id);
+        let response = await getReimbursements(props.authUser?.id);
         console.log(response.status)
         if (response.status==200) {
             let data = response.data;
@@ -132,7 +145,10 @@ function ManagerReimbursementComponent(props: IReimbursementProps) {
                     return reimb.reimb_type_id == type;
                 });
             }
-            setReimbursements(data)
+            data.sort(function(a: Reimbursement, b: Reimbursement) { 
+                return a.id - b.id;
+            });
+            setReimbursements(data);
         }
     }
 
@@ -146,33 +162,31 @@ function ManagerReimbursementComponent(props: IReimbursementProps) {
         getAllReimbursements();
     }
 
-
-
     //Function to get all user's reimbursements
     return (
         props.authUser ?
         <>
+            <div className={classes.reimbursementContainer}>
+                <Button style={{backgroundColor: '#282c34'}} onClick={getAllReimbursements} variant="contained" color="primary" size="medium">Load Selected Reimbursements</Button>
+                <br/><br/>
+            </div>
 
-            <div className={classes.loginContainer}>
-                    <select value = {type} onChange={updateType}>
+            <div className={classes.reimbursementContainer}>
+                    <select id="typeSelect"value = {type} onChange={updateType}>
                         <option value="0">All</option>
                         <option value="1">Lodging</option>
                         <option value="2">Travel</option>
                         <option value="3">Food</option>
                         <option value="4">Other</option>
                     </select>
-
-                    <select value = {status} onChange={updateStatus}>
+                    <select id="statusSelect" value = {status} onChange={updateStatus}>
                         <option value="0">All</option>
                         <option value="1">Pending</option>
                         <option value="2">Denied</option>
                         <option value="3">Approved</option>
                     </select>
-                <br/><br/>
-                <Button onClick={getAllReimbursements} variant="contained" color="primary" size="medium">Load Selected Reimbursements</Button>
-                <br/><br/>
             </div>
-            <div className={classes.loginContainer}>
+            <div className={classes.reimbursementContainer}>
                 <TableContainer component={Paper}>
                     <Table className={classes.table} aria-label="simple table">
                         <TableHead>
@@ -200,14 +214,14 @@ function ManagerReimbursementComponent(props: IReimbursementProps) {
                             <TableCell align="right">{row.description}</TableCell>
                             <TableCell align="right">{row.author}</TableCell>
                             <TableCell align="right">{row.resolver}</TableCell>
-                            <TableCell align="right">{statusDecoder(row.reimb_status_id)}</TableCell>
-                            <TableCell align="right">{typeDecoder(row.reimb_type_id)}</TableCell>
+                            <TableCell id="statusDecoder" align="right">{statusDecoder(row.reimb_status_id)}</TableCell>
+                            <TableCell id="typeDecoder" align="right">{typeDecoder(row.reimb_type_id)}</TableCell>
                             
                             {
                             row.reimb_status_id == 1 ?
                             <>
-                                <TableCell align="right"><Button onClick={() => approve(row)} variant="contained" color="primary" size="medium">Approve</Button></TableCell>
-                                <TableCell align="right"><Button onClick={() => deny(row)} variant="contained" color="primary" size="medium">Deny</Button></TableCell>  
+                                <TableCell align="right"><Button id="approveButton" style={{backgroundColor: '#282c34'}} onClick={() => approve(row)} variant="contained" color="primary" size="medium">Approve</Button></TableCell>
+                                <TableCell align="right"><Button id="denyButton" style={{backgroundColor: '#282c34'}} onClick={() => deny(row)} variant="contained" color="primary" size="medium">Deny</Button></TableCell>  
                             </>
                             : <></>    
                             }   

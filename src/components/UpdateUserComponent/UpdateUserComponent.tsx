@@ -10,25 +10,25 @@ import {
     makeStyles 
 } from '@material-ui/core';
 
-import { authenticate } from '../remote/auth-service';
-import { User } from '../models/user';
+import { authenticate } from '../../remote/auth-service';
+import { User } from '../../models/user';
 import { Redirect } from 'react-router-dom';
-import { updateUser } from '../remote/update-user';
+import { updateUser } from '../../remote/update-user';
 
-interface IUserProps {
+export interface IUserProps {
     authUser: User;
     setAuthUser: (user: User) => void;
 }
 
 const useStyles = makeStyles({
-    loginContainer: {
+    updateContainer: {
         display: "flex",
         justifyContent: "center",
         margin: 20,
         marginTop: 40,
         padding: 20
     },
-    loginForm: {
+    updateForm: {
         width: "50%"
     }
 });
@@ -50,39 +50,42 @@ function UpdateUserComponent(props: IUserProps) {
     const [errorSeverity, setErrorSeverity] = useState('info' as "info" | "error" | "success" | "warning" | undefined);
 
     let updateId = (e: any) => {
-        setId(e.currentTarget.value);
+        setId(e.target.value);
     }
 
     let updateUsername = (e: any) => {
-        setUsername(e.currentTarget.value);
+        setUsername(e.target.value);
     }
 
     let updatePassword = (e: any) => {
-        setPassword(e.currentTarget.value);
+        setPassword(e.target.value);
     }
 
     let updateFirstName = (e: any) => {
-        setFirstName(e.currentTarget.value);
+        setFirstName(e.target.value);
     }
 
     let updateLastName = (e: any) => {
-        setLastName(e.currentTarget.value);
+        setLastName(e.target.value);
     }
 
     let updateEmail = (e: any) => {
-        setEmail(e.currentTarget.value);
+        setEmail(e.target.value);
     }
 
     let updateRole = (e: any) => {
-        setRole(e.currentTarget.value);
+        setRole(e.target.value);
     }
 
     let update = async () => {
-        let response = await updateUser(id, username, password, firstName, lastName, email);
+        let response = await updateUser(id, username, password, firstName, lastName, email, role);
         console.log(response);
         if (response.status == 204) {
             setErrorMessage(`Successfully updated user. `)
             setErrorSeverity("success");
+        } else {
+            setErrorMessage(`Failed to update user.`)
+            setErrorSeverity("error");
         }
         //updateUser(id, username, password, firstName, lastName, email, role);
     }
@@ -90,8 +93,8 @@ function UpdateUserComponent(props: IUserProps) {
     return (
         props.authUser ?
         <>
-            <div className={classes.loginContainer}>
-                <form className={classes.loginForm}>
+            <div className={classes.updateContainer}>
+                <form className={classes.updateForm}>
                     <Typography align="center" variant="h4">Update User Information:</Typography>
 
                     <FormControl margin="normal" fullWidth>
@@ -146,7 +149,7 @@ function UpdateUserComponent(props: IUserProps) {
                             placeholder="Enter email" />
                     </FormControl>
                     
-                    <select value = {role} onChange={updateRole}>
+                    <select id="selectRole" value = {role} onChange={updateRole}>
                         <option value="3">User</option>
                         <option value="1">Admin</option>
                         <option value="2">Manager</option>
@@ -154,7 +157,7 @@ function UpdateUserComponent(props: IUserProps) {
                     </select>
 
                     <br/><br/>
-                    <Button onClick={update} variant="contained" color="primary" size="medium">Submit</Button>
+                    <Button id="updateButton" style={{backgroundColor: '#282c34'}} onClick={update} variant="contained" color="primary" size="medium">Submit</Button>
                     <br/><br/>
                     {
                         errorMessage 
