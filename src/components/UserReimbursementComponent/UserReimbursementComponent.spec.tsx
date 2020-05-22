@@ -191,7 +191,136 @@ describe('UserReimbursementComponent', () => {
             expect(mockRemote2.createNewReimbursement).not.toHaveBeenCalled();
         });
 
-        
+        describe('Update Reimbursement Test', () => {
+            it('Submit button successfully calls login & performs a successful login', () => {
+                let wrapper = mount(userReimbursementComponent);
+                let mockResponse = {status: 204, data: {}};
+                (mockRemote3.updateReimbursement as jest.Mock).mockReturnValue(mockResponse);
+                wrapper.find('input#uid').simulate('change', {
+                    target: { value: 'top-secret' }
+                });
+                wrapper.find('input#uAmount').simulate('change', {
+                    target: { value: 'top-secret' }
+                });
+                wrapper.find('input#uDescription').simulate('change', {
+                    target: { value: 'top-secret' }
+                });
+                expect(wrapper.find('input#uid').prop('value')).toEqual('top-secret');
+                expect(wrapper.find('input#uAmount').prop('value')).toEqual('top-secret');
+                expect(wrapper.find('input#uDescription').prop('value')).toEqual('top-secret');
+                wrapper.find('button#updateButton').simulate('click', {});
+                expect(mockRemote3.updateReimbursement).toHaveBeenCalled();
+            });
+
+            it('Submit button successfully calls login but reimbursement isnt pending', () => {
+                let wrapper = mount(userReimbursementComponent);
+                let mockResponse = 409;
+                (mockRemote3.updateReimbursement as jest.Mock).mockReturnValue(mockResponse);
+                wrapper.find('input#uid').simulate('change', {
+                    target: { value: 'top-secret' }
+                });
+                wrapper.find('input#uAmount').simulate('change', {
+                    target: { value: 'top-secret' }
+                });
+                wrapper.find('input#uDescription').simulate('change', {
+                    target: { value: 'top-secret' }
+                });
+                expect(wrapper.find('input#uid').prop('value')).toEqual('top-secret');
+                expect(wrapper.find('input#uAmount').prop('value')).toEqual('top-secret');
+                expect(wrapper.find('input#uDescription').prop('value')).toEqual('top-secret');
+                wrapper.find('button#updateButton').simulate('click', {});
+                expect(mockRemote3.updateReimbursement).toHaveBeenCalled();
+            });
+
+            it('Submit button successfully calls login but there is no reimbursement with the given ID', () => {
+                let wrapper = mount(userReimbursementComponent);
+                let mockResponse = 404;
+                (mockRemote3.updateReimbursement as jest.Mock).mockReturnValue(mockResponse);
+                wrapper.find('input#uid').simulate('change', {
+                    target: { value: 'top-secret' }
+                });
+                wrapper.find('input#uAmount').simulate('change', {
+                    target: { value: 'top-secret' }
+                });
+                wrapper.find('input#uDescription').simulate('change', {
+                    target: { value: 'top-secret' }
+                });
+                expect(wrapper.find('input#uid').prop('value')).toEqual('top-secret');
+                expect(wrapper.find('input#uAmount').prop('value')).toEqual('top-secret');
+                expect(wrapper.find('input#uDescription').prop('value')).toEqual('top-secret');
+                wrapper.find('button#updateButton').simulate('click', {});
+                expect(mockRemote3.updateReimbursement).toHaveBeenCalled();
+            });
+
+            it('Submit button successfully calls login & the server throws an error', () => {
+                let wrapper = mount(userReimbursementComponent);
+                let mockResponse = 500;
+                (mockRemote3.updateReimbursement as jest.Mock).mockReturnValue(mockResponse);
+                wrapper.find('input#uid').simulate('change', {
+                    target: { value: 'top-secret' }
+                });
+                wrapper.find('input#uAmount').simulate('change', {
+                    target: { value: 'top-secret' }
+                });
+                wrapper.find('input#uDescription').simulate('change', {
+                    target: { value: 'top-secret' }
+                });
+                expect(wrapper.find('input#uid').prop('value')).toEqual('top-secret');
+                expect(wrapper.find('input#uAmount').prop('value')).toEqual('top-secret');
+                expect(wrapper.find('input#uDescription').prop('value')).toEqual('top-secret');
+                wrapper.find('button#updateButton').simulate('click', {});
+                expect(mockRemote3.updateReimbursement).toHaveBeenCalled();
+            });
+
+            it('Submit button successfully calls login but login fails dues to the lack of a uid', () => {
+                let wrapper = mount(userReimbursementComponent);
+                let mockResponse = {status: 204, data: {}};
+                (mockRemote3.updateReimbursement as jest.Mock).mockReturnValue(mockResponse);
+                wrapper.find('input#uAmount').simulate('change', {
+                    target: { value: 'top-secret' }
+                });
+                wrapper.find('input#uDescription').simulate('change', {
+                    target: { value: 'top-secret' }
+                });
+                expect(wrapper.find('input#uAmount').prop('value')).toEqual('top-secret');
+                expect(wrapper.find('input#uDescription').prop('value')).toEqual('top-secret');
+                wrapper.find('button#updateButton').simulate('click', {});
+                expect(mockRemote3.updateReimbursement).not.toHaveBeenCalled();
+            });
+
+            it('Submit button successfully calls login but login fails dues to the lack of an uAmount', () => {
+                let wrapper = mount(userReimbursementComponent);
+                let mockResponse = {status: 204, data: {}};
+                (mockRemote3.updateReimbursement as jest.Mock).mockReturnValue(mockResponse);
+                wrapper.find('input#uid').simulate('change', {
+                    target: { value: 'top-secret' }
+                });
+                wrapper.find('input#uDescription').simulate('change', {
+                    target: { value: 'top-secret' }
+                });
+                expect(wrapper.find('input#uid').prop('value')).toEqual('top-secret');
+                expect(wrapper.find('input#uDescription').prop('value')).toEqual('top-secret');
+                wrapper.find('button#updateButton').simulate('click', {});
+                expect(mockRemote3.updateReimbursement).not.toHaveBeenCalled();
+            });
+
+            it('Submit button successfully calls login but login fails dues to the lack of a uDescription', () => {
+                let wrapper = mount(userReimbursementComponent);
+                let mockResponse = {status: 204, data: {}};
+                (mockRemote3.updateReimbursement as jest.Mock).mockReturnValue(mockResponse);
+                wrapper.find('input#uid').simulate('change', {
+                    target: { value: 'top-secret' }
+                });
+                wrapper.find('input#uAmount').simulate('change', {
+                    target: { value: 'top-secret' }
+                });
+                expect(wrapper.find('input#uid').prop('value')).toEqual('top-secret');
+                expect(wrapper.find('input#uAmount').prop('value')).toEqual('top-secret');
+                wrapper.find('button#updateButton').simulate('click', {});
+                expect(mockRemote3.updateReimbursement).not.toHaveBeenCalled();
+            });
+        });
+
     });
 
     // /*

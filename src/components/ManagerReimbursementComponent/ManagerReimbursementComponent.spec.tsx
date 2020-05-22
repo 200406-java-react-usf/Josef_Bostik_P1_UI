@@ -118,7 +118,5 @@ describe('ManagerReimbursementComponent', () => {
         let wrapper = mount(managerReimbursementComponent);
         expect(mockRemote.getReimbursements).toHaveBeenCalledTimes(1);
     });
-    
-
 
 })
