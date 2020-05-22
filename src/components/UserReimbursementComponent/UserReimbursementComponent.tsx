@@ -120,15 +120,6 @@ function UserReimbursementComponent(props: IReimbursementProps) {
         return status;
     }
 
-    let deleteReimbursementById = async (id: number) => {
-        let response = await deleteReimbursement(id);
-        if (response.status == 204) {
-            console.log("success");
-            getAllUserReimbursements();
-        }
-        
-    }
-
     let getAllUserReimbursements = async () => {
         let response = await getUserReimbursements(props.authUser?.id);
         console.log("Retrieved All User Reimbursements, Status: " + response.status)
@@ -297,7 +288,7 @@ function UserReimbursementComponent(props: IReimbursementProps) {
                     </select> */}
 
                     <br/><br/>
-                    <Button style={{backgroundColor: '#282c34'}} onClick={updateUserReimbursement} variant="contained" color="primary" size="medium">Update</Button>
+                    <Button id = "updateButton" style={{backgroundColor: '#282c34'}} onClick={updateUserReimbursement} variant="contained" color="primary" size="medium">Update</Button>
                     <br/><br/>
                     {
                         uErrorMessage 
