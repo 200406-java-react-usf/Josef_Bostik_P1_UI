@@ -78,8 +78,6 @@ function UpdateUserComponent(props: IUserProps) {
     }
 
     let update = async () => {
-        console.log(id + username + password + firstName + lastName + email + role);
-        console.log(role);
         let response = await updateUser(id, username, password, firstName, lastName, email, role);
         console.log(response);
         if (response.status == 204) {
